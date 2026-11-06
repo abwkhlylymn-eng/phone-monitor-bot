@@ -10,109 +10,84 @@ from telegram.ext import (
     ContextTypes,
 )
 
-# ضع هنا الـ Token الخاص بك
+# 囟毓 賴賳丕 丕賱賭 Token 丕賱禺丕氐 亘賰
 TOKEN = "9033036280:AAF6wkoKFuRuJj8oVKQLZHVGziKlJqQLdj0"
 
 
-# --- جزء سيرفر الويب البسيط لإبقاء الحاوية نشطة على Hugging Face ---
 class DummyHandler(BaseHTTPRequestHandler):
-
-  def do_GET(self):
-    self.send_response(200)
-    self.end_headers()
-    self.wfile.write(
-        b"Bot is active and running on Hugging Face Spaces successfully!"
-    )
+    def do_GET(self):
+        self.send_response(200)
+        self.end_headers()
+        self.wfile.write(b"Bot is active and running successfully!")
 
 
 def run_web_server():
-  port = int(os.environ.get("PORT", 7860))
-  server = HTTPServer(("0.0.0.0", port), DummyHandler)
-  print(f"Web server running on port {port}...")
-  server.serve_forever()
+    port = int(os.environ.get("PORT", 7860))
+    server = HTTPServer(("0.0.0.0", port), DummyHandler)
+    print(f"Web server running on port {port}...")
+    server.serve_forever()
 
 
-# --- كود بوت تيليجرام ---
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
-  keyboard = [
-      [InlineKeyboardButton("🔋 حالة الشحن", callback_data="charging_menu")],
-      [InlineKeyboardButton("⚡ نسبة الشحن", callback_data="level_menu")],
-      [InlineKeyboardButton("📱 حالة الشاشة", callback_data="screen_menu")],
-  ]
-  reply_markup = InlineKeyboardMarkup(keyboard)
-  await update.message.reply_text(
-      "أهلاً بك في لوحة تحكم ومراقبة هاتفك المنزلي 🏠\nاختر ما تحب مراقبته:",
-      reply_markup=reply_markup,
-  )
+    keyboard = [
+        [InlineKeyboardButton("丨丕賱丞 丕賱卮丨賳", callback_data="charging_menu")],
+        [InlineKeyboardButton("賳爻亘丞 丕賱卮丨賳", callback_data="level_menu")],
+        [InlineKeyboardButton("丨丕賱丞 丕賱卮丕卮丞", callback_data="screen_menu")],
+    ]
+    reply_markup = InlineKeyboardMarkup(keyboard)
+    await update.message.reply_text(
+        "兀賴賱丕賸 亘賰 賮賷 賱賵丨丞 鬲丨賰賲 賵賲乇丕賯亘丞 賴丕鬲賮賰 丕賱賲賳夭賱賷\n丕禺鬲乇 賲丕 鬲丨亘 賲乇丕賯亘鬲賴:",
+        reply_markup=reply_markup,
+    )
 
 
 async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
-  query = update.callback_query
-  await query.answer()
+    query = update.callback_query
+    await query.answer()
 
-  if query.data == "charging_menu":
-    keyboard = [
-        [
-            InlineKeyboardButton(
-                "🔄 الحالة الآنية (طلب تحديث)",
-                callback_data="get_live_charging",
-            )
-        ],
-        [
-            InlineKeyboardButton(
-                "📂 عرض آخر تحديث محفوظ", callback_data="get_last_charging"
-            )
-        ],
-        [InlineKeyboardButton("⬅️ رجوع للقائمة الرئيسية", callback_data="back_home")],
-    ]
-    await query.edit_message_text(
-        text="قائمة حالة الشحن:", reply_markup=InlineKeyboardMarkup(keyboard)
-    )
+    if query.data == "charging_menu":
+        keyboard = [
+            [InlineKeyboardButton("丕賱丨丕賱丞 丕賱丌賳賷丞 (胤賱亘 鬲丨丿賷孬)", callback_data="get_live_charging")],
+            [InlineKeyboardButton("毓乇囟 丌禺乇 鬲丨丿賷孬 賲丨賮賵馗", callback_data="get_last_charging")],
+            [InlineKeyboardButton("乇噩賵毓 賱賱賯丕卅賲丞 丕賱乇卅賷爻賷丞", callback_data="back_home")],
+        ]
+        await query.edit_message_text(
+            text="賯丕卅賲丞 丨丕賱丞 丕賱卮丨賳:", reply_markup=InlineKeyboardMarkup(keyboard)
+        )
 
-  elif query.data == "level_menu":
-    keyboard = [
-        [
-            InlineKeyboardButton(
-                "🔄 النسبة الآنية (طلب تحديث)", callback_data="get_live_level"
-            )
-        ],
-        [
-            InlineKeyboardButton(
-                "📂 عرض آخر نسبة محفوظة", callback_data="get_last_level"
-            )
-        ],
-        [InlineKeyboardButton("⬅️ رجوع للقائمة الرئيسية", callback_data="back_home")],
-    ]
-    await query.edit_message_text(
-        text="قائمة نسبة البطارية:", reply_markup=InlineKeyboardMarkup(keyboard)
-    )
+    elif query.data == "level_menu":
+        keyboard = [
+            [InlineKeyboardButton("丕賱賳爻亘丞 丕賱丌賳賷丞 (胤賱亘 鬲丨丿賷孬)", callback_data="get_live_level")],
+            [InlineKeyboardButton("毓乇囟 丌禺乇 賳爻亘丞 賲丨賮賵馗丞", callback_data="get_last_level")],
+            [InlineKeyboardButton("乇噩賵毓 賱賱賯丕卅賲丞 丕賱乇卅賷爻賷丞", callback_data="back_home")],
+        ]
+        await query.edit_message_text(
+            text="賯丕卅賲丞 賳爻亘丞 丕賱亘胤丕乇賷丞:", reply_markup=InlineKeyboardMarkup(keyboard)
+        )
 
-  elif query.data == "back_home":
-    keyboard = [
-        [InlineKeyboardButton("🔋 حالة الشحن", callback_data="charging_menu")],
-        [InlineKeyboardButton("⚡ نسبة الشحن", callback_data="level_menu")],
-        [InlineKeyboardButton("📱 حالة الشاشة", callback_data="screen_menu")],
-    ]
-    await query.edit_message_text(
-        text="القائمة الرئيسية:", reply_markup=InlineKeyboardMarkup(keyboard)
-    )
+    elif query.data == "back_home":
+        keyboard = [
+            [InlineKeyboardButton("丨丕賱丞 丕賱卮丨賳", callback_data="charging_menu")],
+            [InlineKeyboardButton("賳爻亘丞 丕賱卮丨賳", callback_data="level_menu")],
+            [InlineKeyboardButton("丨丕賱丞 丕賱卮丕卮丞", callback_data="screen_menu")],
+        ]
+        await query.edit_message_text(
+            text="丕賱賯丕卅賲丞 丕賱乇卅賷爻賷丞:", reply_markup=InlineKeyboardMarkup(keyboard)
+        )
 
-  elif query.data in ["get_live_charging", "get_last_charging", "get_live_level"]:
-    await query.message.reply_text(
-        "⏳ جاري جلب البيانات من الهاتف المنزلي...\n(القيمة الحالية: 85% - يشحن"
-        " 🔌)\n⏰ الوقت: 07:15 م"
-    )
+    elif query.data in ["get_live_charging", "get_last_charging", "get_live_level"]:
+        await query.message.reply_text(
+            "噩丕乇賷 噩賱亘 丕賱亘賷丕賳丕鬲 賲賳 丕賱賴丕鬲賮 丕賱賲賳夭賱賷...\n(丕賱賯賷賲丞 丕賱丨丕賱賷丞: 85%)\n丕賱賵賯鬲: 07:15 賲"
+        )
 
 
 if __name__ == "__main__":
-  # تشغيل سيرفر الويب في خلفية منفصلة (Thread)
-  server_thread = threading.Thread(target=run_web_server, daemon=True)
-  server_thread.start()
+    server_thread = threading.Thread(target=run_web_server, daemon=True)
+    server_thread.start()
 
-  # تشغيل بوت تيليجرام
-  app = ApplicationBuilder().token(TOKEN).build()
-  app.add_handler(CommandHandler("start", start))
-  app.add_handler(CallbackQueryHandler(button_handler))
+    app = ApplicationBuilder().token(TOKEN).build()
+    app.add_handler(CommandHandler("start", start))
+    app.add_handler(CallbackQueryHandler(button_handler))
 
-  print("البوت يعمل الآن بنجاح على السحابة...")
-  app.run_polling()
+    print("丕賱亘賵鬲 賷毓賲賱 丕賱丌賳 亘賳噩丕丨 毓賱賶 丕賱爻丨丕亘丞...")
+    app.run_polling()
