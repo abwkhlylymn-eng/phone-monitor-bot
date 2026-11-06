@@ -1,6 +1,7 @@
 import os
 import threading
 from http.server import BaseHTTPRequestHandler, HTTPServer
+import requests
 import telegram
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup, Update
 from telegram.ext import (
@@ -10,8 +11,11 @@ from telegram.ext import (
     ContextTypes,
 )
 
-# ضع هنا الـ Token الخاص بك
+# ضع هنا الـ Token الخاص ببوت تيليجرام
 TOKEN = "9033036280:AAF6wkoKFuRuJj8oVKQLZHVGziKlJqQLdj0"
+
+# ضع هنا رابط الـ npoint الذي حصلت عليه
+NPOINT_URL = "ضع_رابط_npoint_هنا"
 
 
 class DummyHandler(BaseHTTPRequestHandler):
@@ -47,23 +51,26 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     if query.data == "charging_menu":
         keyboard = [
-            [InlineKeyboardButton("الحالة الآنية (طلب تحديث)", callback_data="get_live_charging")],
-            [InlineKeyboardButton("عرض آخر تحديث محفوظ", callback_data="get_last_charging")],
+            [InlineKeyboardButton("الحالة الآنية (طلب تحديث)", callback_data="get_live_data")],
+            [InlineKeyboardButton("عرض آخر تحديث محفوظ", callback_data="get_live_data")],
             [InlineKeyboardButton("رجوع للقائمة الرئيسية", callback_data="back_home")],
         ]
-        await query.edit_message_text(
-            text="قائمة حالة الشحن:", reply_markup=InlineKeyboardMarkup(keyboard)
-        )
+        await query.edit_message_text(text="قائمة حالة الشحن:", reply_markup=InlineKeyboardMarkup(keyboard))
 
     elif query.data == "level_menu":
         keyboard = [
-            [InlineKeyboardButton("النسبة الآنية (طلب تحديث)", callback_data="get_live_level")],
-            [InlineKeyboardButton("عرض آخر نسبة محفوظة", callback_data="get_last_level")],
+            [InlineKeyboardButton("النسبة الآنية (طلب تحديث)", callback_data="get_live_data")],
+            [InlineKeyboardButton("عرض آخر نسبة محفوظة", callback_data="get_live_data")],
             [InlineKeyboardButton("رجوع للقائمة الرئيسية", callback_data="back_home")],
         ]
-        await query.edit_message_text(
-            text="قائمة نسبة البطارية:", reply_markup=InlineKeyboardMarkup(keyboard)
-        )
+        await query.edit_message_text(text="قائمة نسبة البطارية:", reply_markup=InlineKeyboardMarkup(keyboard))
+
+    elif query.data == "screen_menu":
+        keyboard = [
+            [InlineKeyboardButton("حالة الشاشة الآنية", callback_data="get_live_data")],
+            [InlineKeyboardButton("رجوع للقائمة الرئيسية", callback_data="back_home")],
+        ]
+        await query.edit_message_text(text="قائمة حالة الشاشة:", reply_markup=InlineKeyboardMarkup(keyboard))
 
     elif query.data == "back_home":
         keyboard = [
@@ -71,14 +78,28 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
             [InlineKeyboardButton("نسبة الشحن", callback_data="level_menu")],
             [InlineKeyboardButton("حالة الشاشة", callback_data="screen_menu")],
         ]
-        await query.edit_message_text(
-            text="القائمة الرئيسية:", reply_markup=InlineKeyboardMarkup(keyboard)
-        )
+        await query.edit_message_text(text="القائمة الرئيسية:", reply_markup=InlineKeyboardMarkup(keyboard))
 
-    elif query.data in ["get_live_charging", "get_last_charging", "get_live_level"]:
-        await query.message.reply_text(
-            "جاري جلب البيانات من الهاتف المنزلي...\n(القيمة الحالية: 85%)\nالوقت: 07:15 م"
-        )
+    elif query.data == "get_live_data":
+        try:
+            response = requests.get(NPOINT_URL)
+            data = response.json()
+            
+            level = data.get("level", "--")
+            charging = data.get("charging", "--")
+            screen = data.get("screen", "--")
+            time_val = data.get("time", "--")
+
+            msg = (
+                f"📊 *تقرير حالة الهاتف المنزلي*\n\n"
+                f"🔋 *النسبة:* {level}%\n"
+                f"⚡ *الحالة:* {charging}\n"
+                f"📱 *الشاشة:* {screen}\n\n"
+                f"⏰ *وقت القياس:* {time_val}"
+            )
+            await query.message.reply_text(text=msg, parse_mode="Markdown")
+        except Exception as e:
+            await query.message.reply_text(text="⚠️ حدث خطأ أثناء جلب البيانات من السحابة.")
 
 
 if __name__ == "__main__":
