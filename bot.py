@@ -15,7 +15,7 @@ from telegram.ext import (
 TOKEN = "9033036280:AAF6wkoKFuRuJj8oVKQLZHVGziKlJqQLdj0"
 
 # ضع هنا رابط الـ npoint الذي حصلت عليه
-NPOINT_URL = "ضع_رابط_npoint_هنا"
+NPOINT_URL = "https://api.npoint.io/44098f91102a3b6b77df"
 
 
 class DummyHandler(BaseHTTPRequestHandler):
